@@ -2,12 +2,12 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.github.dcendents.android-maven'
 
 android {
-	compileSdkVersion 21
+	compileSdkVersion 23
 	buildToolsVersion '26.0.2'
 
 	defaultConfig {
-		minSdkVersion 8
-		targetSdkVersion 21
+		minSdkVersion 10
+		targetSdkVersion 23
 	}
 
 	buildTypes {
@@ -16,6 +16,13 @@ android {
 			proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
 		}
 	}
+
+}
+
+
+dependencies {
+	compile 'com.android.support:appcompat-v7:23.1.0'
+	compile 'com.android.support:design:23.1.0'
 }
 
 task sourcesJar(type: Jar) {

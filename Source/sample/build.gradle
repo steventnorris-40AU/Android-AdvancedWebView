@@ -1,13 +1,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 23
     buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId "im.delight.android.examples.webview"
-        minSdkVersion 8
-        targetSdkVersion 21
+        minSdkVersion 10
+        targetSdkVersion 23
     }
 
     buildTypes {

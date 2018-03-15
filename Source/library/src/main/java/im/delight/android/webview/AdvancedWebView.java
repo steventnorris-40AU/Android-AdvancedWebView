@@ -58,7 +58,9 @@ import java.util.List;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.util.Map;
+import android.os.Parcelable;
 import android.util.Log;
+import android.support.v4.content.ContextCompat;
 
 /** Advanced WebView component for Android that works as intended out of the box */
 @SuppressWarnings("deprecation")
@@ -1154,11 +1156,11 @@ public class AdvancedWebView extends WebView {
 
 	@SuppressLint("NewApi")
 	protected void openFileInput(final ValueCallback<Uri> fileUploadCallbackFirst, final ValueCallback<Uri[]> fileUploadCallbackSecond, final boolean allowMultiple) {
-//		if(
-//			ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-//			ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
-//			ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-//		) {
+		if(
+			ContextCompat.checkSelfPermission(getContext(), Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+			ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+			ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+		) {
 			if (mFileUploadCallbackFirst != null) {
 				mFileUploadCallbackFirst.onReceiveValue(null);
 			}
@@ -1180,19 +1182,20 @@ public class AdvancedWebView extends WebView {
 
 			iContent.setType(mUploadableFileTypes);
 
-			Intent iCapture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
-			iContent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new android.os.Parcelable[]{iCapture});
+//			Intent iCapture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//			iCapture.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Parcelable[] { iContent });
+//
+//			Intent iChooser = Intent.createChooser(iCapture, "Image Upload");
 
 			if (mFragment != null && mFragment.get() != null && Build.VERSION.SDK_INT >= 11) {
 				mFragment.get().startActivityForResult(Intent.createChooser(iContent, getFileUploadPromptLabel()), mRequestCodeFilePicker);
 			} else if (mActivity != null && mActivity.get() != null) {
 				mActivity.get().startActivityForResult(Intent.createChooser(iContent, getFileUploadPromptLabel()), mRequestCodeFilePicker);
 			}
-//		}
-//		else{
-//			Log.e("PERMISSIONS NOT GRANTED FOR PHOTO UPLOAD");
-//		}
+		}
+		else{
+			Log.e("PERMISSIONS ERROR", "PERMISSIONS NOT GRANTED FOR PHOTO UPLOAD");
+		}
 	}
 
 	/**
