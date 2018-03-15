@@ -6,6 +6,7 @@ package im.delight.android.webview;
  * Licensed under the MIT License (https://opensource.org/licenses/MIT)
  */
 
+import android.Manifest;
 import android.provider.MediaStore;
 import android.view.ViewGroup;
 import android.app.DownloadManager;
@@ -57,6 +58,7 @@ import java.util.List;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.util.Map;
+import android.util.Log;
 
 /** Advanced WebView component for Android that works as intended out of the box */
 @SuppressWarnings("deprecation")
@@ -1152,38 +1154,45 @@ public class AdvancedWebView extends WebView {
 
 	@SuppressLint("NewApi")
 	protected void openFileInput(final ValueCallback<Uri> fileUploadCallbackFirst, final ValueCallback<Uri[]> fileUploadCallbackSecond, final boolean allowMultiple) {
-		if (mFileUploadCallbackFirst != null) {
-			mFileUploadCallbackFirst.onReceiveValue(null);
-		}
-		mFileUploadCallbackFirst = fileUploadCallbackFirst;
-
-		if (mFileUploadCallbackSecond != null) {
-			mFileUploadCallbackSecond.onReceiveValue(null);
-		}
-		mFileUploadCallbackSecond = fileUploadCallbackSecond;
-
-		Intent iContent = new Intent(Intent.ACTION_GET_CONTENT);
-		iContent.addCategory(Intent.CATEGORY_OPENABLE);
-
-		if (allowMultiple) {
-			if (Build.VERSION.SDK_INT >= 18) {
-				iContent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+//		if(
+//			ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+//			ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED &&
+//			ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+//		) {
+			if (mFileUploadCallbackFirst != null) {
+				mFileUploadCallbackFirst.onReceiveValue(null);
 			}
-		}
+			mFileUploadCallbackFirst = fileUploadCallbackFirst;
 
-		iContent.setType(mUploadableFileTypes);
+			if (mFileUploadCallbackSecond != null) {
+				mFileUploadCallbackSecond.onReceiveValue(null);
+			}
+			mFileUploadCallbackSecond = fileUploadCallbackSecond;
 
-		Intent iCapture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+			Intent iContent = new Intent(Intent.ACTION_GET_CONTENT);
+			iContent.addCategory(Intent.CATEGORY_OPENABLE);
 
-		Intent iChooser = new Intent.createChooser(iContent, "Image Chooser");
-		iChooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new android.os.Parcelable[] { iCapture });
+			if (allowMultiple) {
+				if (Build.VERSION.SDK_INT >= 18) {
+					iContent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+				}
+			}
 
-		if (mFragment != null && mFragment.get() != null && Build.VERSION.SDK_INT >= 11) {
-			mFragment.get().startActivityForResult(Intent.createChooser(iChooser, getFileUploadPromptLabel()), mRequestCodeFilePicker);
-		}
-		else if (mActivity != null && mActivity.get() != null) {
-			mActivity.get().startActivityForResult(Intent.createChooser(iChooser, getFileUploadPromptLabel()), mRequestCodeFilePicker);
-		}
+			iContent.setType(mUploadableFileTypes);
+
+			Intent iCapture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+			iContent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new android.os.Parcelable[]{iCapture});
+
+			if (mFragment != null && mFragment.get() != null && Build.VERSION.SDK_INT >= 11) {
+				mFragment.get().startActivityForResult(Intent.createChooser(iContent, getFileUploadPromptLabel()), mRequestCodeFilePicker);
+			} else if (mActivity != null && mActivity.get() != null) {
+				mActivity.get().startActivityForResult(Intent.createChooser(iContent, getFileUploadPromptLabel()), mRequestCodeFilePicker);
+			}
+//		}
+//		else{
+//			Log.e("PERMISSIONS NOT GRANTED FOR PHOTO UPLOAD");
+//		}
 	}
 
 	/**
