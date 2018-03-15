@@ -6,6 +6,7 @@ package im.delight.android.webview;
  * Licensed under the MIT License (https://opensource.org/licenses/MIT)
  */
 
+import android.provider.MediaStore;
 import android.view.ViewGroup;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
@@ -1161,22 +1162,27 @@ public class AdvancedWebView extends WebView {
 		}
 		mFileUploadCallbackSecond = fileUploadCallbackSecond;
 
-		Intent i = new Intent(Intent.ACTION_GET_CONTENT);
-		i.addCategory(Intent.CATEGORY_OPENABLE);
+		Intent iContent = new Intent(Intent.ACTION_GET_CONTENT);
+		iContent.addCategory(Intent.CATEGORY_OPENABLE);
 
 		if (allowMultiple) {
 			if (Build.VERSION.SDK_INT >= 18) {
-				i.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+				iContent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
 			}
 		}
 
-		i.setType(mUploadableFileTypes);
+		iContent.setType(mUploadableFileTypes);
+
+		Intent iCapture = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+
+		Intent iChooser = new Intent.createChooser(iContent, "Image Chooser");
+		iChooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, new android.os.Parcelable[] { iCapture });
 
 		if (mFragment != null && mFragment.get() != null && Build.VERSION.SDK_INT >= 11) {
-			mFragment.get().startActivityForResult(Intent.createChooser(i, getFileUploadPromptLabel()), mRequestCodeFilePicker);
+			mFragment.get().startActivityForResult(Intent.createChooser(iChooser, getFileUploadPromptLabel()), mRequestCodeFilePicker);
 		}
 		else if (mActivity != null && mActivity.get() != null) {
-			mActivity.get().startActivityForResult(Intent.createChooser(i, getFileUploadPromptLabel()), mRequestCodeFilePicker);
+			mActivity.get().startActivityForResult(Intent.createChooser(iChooser, getFileUploadPromptLabel()), mRequestCodeFilePicker);
 		}
 	}
 
